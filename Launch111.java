@@ -165,7 +165,7 @@ public class Launch111 {
 		}
 		return distanceValue;
 	}
-	/**Retourne le numero de la couleur detectée entre 0 et 7 pour les couleursn suivantes:
+	/**Retourne le numero de la couleur detectée entre 0 et 7 pour les couleurs suivantes:
 	 *  NONE, BLACK, BLUE, GREEN, YELLOW, RED, WHITE, BROWN*/
 	public float couleur() {
 		EV3ColorSensor s = new EV3ColorSensor(SensorPort.S3);
