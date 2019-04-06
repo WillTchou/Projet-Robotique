@@ -1,15 +1,12 @@
-import java.awt.List;
-
 import java.util.ArrayList;
-
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.Motor;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.hardware.sensor.EV3ColorSensor;
+
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 public class Launch111 {
@@ -53,7 +50,7 @@ public class Launch111 {
 		Motor.A.rotate(-405);
 		Motor.B.rotate(405);
 	}
-	
+
 	public static void smallTurn() {
 		Motor.A.rotate(-50);
 		Motor.B.rotate(50);
@@ -81,6 +78,27 @@ public class Launch111 {
 		t.close();
 		return (int) tab[0];
 	}
+
+	public static void recuperer() {
+		openMouth();
+		int press = 0;
+		while(press==0 ) {
+			moveForward();
+			if(isPressed() == 1) {
+				press = 1 ;
+				stop();
+				closeMouth();
+				Delay.msDelay(3000);
+				turn360();
+				//Delay.msDelay(2000);
+				moveForward();
+				Delay.msDelay(3000);
+				stop();
+			}
+		}
+
+	}
+
 
 	public static boolean detect() {
 
@@ -131,13 +149,13 @@ public class Launch111 {
 			return true;
 		return false;
 	}
-	
-	public static int distance() {
+
+	public static ArrayList<Integer> distance() {
 		EV3UltrasonicSensor us1 = new EV3UltrasonicSensor(SensorPort.S1);
 		final SampleProvider sp = us1.getDistanceMode();
 		ArrayList<Integer> distanceValue= new ArrayList<Integer>();
-		int[] distances = new int[100]
-		
+		int[] distances = new int[100];
+
 		final int iteration_threshold = 100;
 		for(int i = 0; i <= iteration_threshold; i++) {
 			float [] sample = new float[sp.sampleSize()];
@@ -147,37 +165,39 @@ public class Launch111 {
 		}
 		return distanceValue;
 	}
+	/**Retourne le numero de la couleur detectée entre 0 et 7 pour les couleursn suivantes:
+	 *  NONE, BLACK, BLUE, GREEN, YELLOW, RED, WHITE, BROWN*/
+	public float couleur() {
+		EV3ColorSensor s = new EV3ColorSensor(SensorPort.S3);
+		SampleProvider sp = s.getColorIDMode();//0-7
+		float [] sample =new float [sp.sampleSize()];
+		sp.fetchSample(sample, 0);
+		return sample[0];
+	}
+	/**Suis la couleur donnée en argument*/
+	public void suivreCouleur(float f) {
+		EV3ColorSensor s = new EV3ColorSensor(SensorPort.S3);
+		SampleProvider sp = s.getColorIDMode();//0-7
+		float [] sample =new float [sp.sampleSize()];
+		sp.fetchSample(sample, 0);
+		while(sample[0]==f) {
+			moveForward();
+		}
+	}
 
 	public static void main(String[] args) {
-		Boolean detected=false;
+		/*		Boolean detected=false;
 		while(!detected) {
 			if(detect()) {
 				detected=true;
 				moveForward();
 				Delay.msDelay(1000);
 			}
-		}
+		}*/
 		openMouth();
 		closeMouth();
-		
-	/*	openMouth();
-		int press = 0;
-		while(press==0 ) {
-			moveForward();
-			if(isPressed() == 1) {
-				press = 1 ;
-				stop();
-				closeMouth();
-				Delay.msDelay(3000);
-				turn360();
-				//Delay.msDelay(2000);
-				moveForward();
-				Delay.msDelay(3000);
-				stop();
-			}
 
-		}
+
 		//detect2();
-		//closeMouth();*/
 	}
-	}
+}
