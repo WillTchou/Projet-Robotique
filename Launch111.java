@@ -9,7 +9,7 @@ import lejos.hardware.sensor.EV3ColorSensor;
 
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
-public class Launch111 {
+public class Test {
 
 	public static void stop() {
 		Motor.B.stop();
@@ -165,39 +165,34 @@ public class Launch111 {
 		}
 		return distanceValue;
 	}
+
 	/**Retourne le numero de la couleur detectée entre 0 et 7 pour les couleurs suivantes:
 	 *  NONE, BLACK, BLUE, GREEN, YELLOW, RED, WHITE, BROWN*/
-	public float couleur() {
-		EV3ColorSensor s = new EV3ColorSensor(SensorPort.S3);
-		SampleProvider sp = s.getColorIDMode();//0-7
+	public static float couleur() {
+		EV3ColorSensor sensor = new EV3ColorSensor(SensorPort.S2);
+		SampleProvider sp = sensor.getColorIDMode();//0-7
 		float [] sample =new float [sp.sampleSize()];
 		sp.fetchSample(sample, 0);
+		System.out.println(sample[0]);
+		Delay.msDelay(5000);
 		return sample[0];
 	}
-	/**Suis la couleur donnée en argument*/
-	public void suivreCouleur(float f) {
-		EV3ColorSensor s = new EV3ColorSensor(SensorPort.S3);
-		SampleProvider sp = s.getColorIDMode();//0-7
-		float [] sample =new float [sp.sampleSize()];
-		sp.fetchSample(sample, 0);
-		while(sample[0]==f) {
-			moveForward();
+	/**Ne marche pas mais c'est l'idée*/
+	public static void suivreCouleur(float f) {
+		if(couleur()==f) {
+			Motor.A.forward();
+			Motor.B.forward();
 		}
+		else {
+			Motor.A.forward();
+			suivreCouleur(f);
+		}
+
 	}
-
 	public static void main(String[] args) {
-		/*		Boolean detected=false;
-		while(!detected) {
-			if(detect()) {
-				detected=true;
-				moveForward();
-				Delay.msDelay(1000);
-			}
-		}*/
-		openMouth();
-		closeMouth();
 
-
-		//detect2();
+		suivreCouleur(6);//6 c'est WHITE
+	
+	
 	}
 }
